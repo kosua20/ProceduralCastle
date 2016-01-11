@@ -2,14 +2,17 @@
 int terrainHeight, margin,douveWidth, douveDepth,pointCount;
   
 void setup() {
-  randomParameters(0);
+  randomParameters(-1);
   size(1300,600);
   noLoop();
 }
 
 void randomParameters(int seed){
-  //randomSeed(seed);
-  //noiseSeed(seed);
+  if(seed >= 0){
+    println("Seed: " + seed);
+    randomSeed(seed);
+    noiseSeed(seed);
+  }
   terrainHeight = 130 + (int)random(-10,10);
   margin = terrainHeight - 10;
   println("Terrain height: " + terrainHeight + ", margin: " + margin);
@@ -28,12 +31,13 @@ void draw() {
 
 void drawBuildings(){
   fill(#FFFFFF);
-  stroke(#FF0000);
-  
-  rect(margin+douveWidth,height-douveDepth-100,width-2*(margin+douveWidth),100);
-  rect(margin+douveWidth,height-douveDepth-100*2,width-2*(margin+douveWidth),100);
-  rect(margin+douveWidth+150,height-douveDepth-100*3,width-2*(margin+douveWidth)-2*150,100);
-  rect(margin+douveWidth+2*150,height-douveDepth-100*4,width-2*(margin+douveWidth)-4*150,100);
+  stroke(#000000);
+  int height1 = 100;
+  rect(margin+douveWidth,height-douveDepth-height1,width-2*(margin+douveWidth),height1);
+  rect(margin+douveWidth,height-douveDepth-2*height1,width-2*(margin+douveWidth),height1);
+  int height2 = 70;
+  rect(margin+douveWidth+150,height-douveDepth-(2*height1+height2),width-2*(margin+douveWidth)-2*150,height2);
+  rect(margin+douveWidth+2*150,height-douveDepth-(2*height1+2*height2),width-2*(margin+douveWidth)-4*150,height2);
 }
 
 void drawGround(boolean withBase){
