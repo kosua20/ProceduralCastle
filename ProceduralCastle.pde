@@ -26,18 +26,43 @@ void randomParameters(int seed){
 void draw() {
   background(#000000);
    drawGround(false);
+   //Draw the base
+   rect(margin+douveWidth,height-terrainHeight,width - 2*(margin+douveWidth),terrainHeight);
    drawBuildings();
+    saveFrame("../Output/frame_" + month() +"_"+ day() +"_"+ hour() +"_"+ minute() +"_"+ second() + ".png");
 }
 
 void drawBuildings(){
+  
+  int height1 = (int)random(80,120);
+  int height2 = height1 + (int)random(20,80);
+  int height3 = height2 + (int)random(20,80);
+  int fullWidth = width - 2*(margin+douveWidth);
+  int width1 = fullWidth;
+  int width2 = (int)(fullWidth*random(0.4,0.65));
+  int width3 = (int)(fullWidth*1.0/6.0);
+  
+  float halfWidth1 = (width1-width2)*0.5;
+  float halfWidth2 = (width2-width3)*0.5;
+ 
   fill(#FFFFFF);
-  stroke(#000000);
-  int height1 = 100;
-  rect(margin+douveWidth,height-douveDepth-height1,width-2*(margin+douveWidth),height1);
-  rect(margin+douveWidth,height-douveDepth-2*height1,width-2*(margin+douveWidth),height1);
-  int height2 = 70;
-  rect(margin+douveWidth+150,height-douveDepth-(2*height1+height2),width-2*(margin+douveWidth)-2*150,height2);
-  rect(margin+douveWidth+2*150,height-douveDepth-(2*height1+2*height2),width-2*(margin+douveWidth)-4*150,height2);
+  stroke(#FF0000);
+  drawRing(margin+douveWidth,halfWidth1,height1);
+  stroke(#00FF00);
+  drawRing(margin+douveWidth+halfWidth1,halfWidth2,height2);
+  stroke(#0000FF);
+  drawCenter(width3,height3);
+}
+
+void drawCenter(float widthC, float heightC){
+  rect((width-widthC)*0.5,height-terrainHeight-heightC,widthC,heightC);
+}
+void drawRing(float x, float halfWidth, float blockHeight){
+  //Left block
+  rect(x,height-terrainHeight-blockHeight,halfWidth,blockHeight);
+  
+  //Right block
+  rect(width-x-halfWidth,height-terrainHeight-blockHeight,halfWidth,blockHeight);
 }
 
 void drawGround(boolean withBase){
@@ -70,13 +95,3 @@ void drawGround(boolean withBase){
   vertex(width, height);
   endShape(CLOSE);
 }
-
-/*void setGradient(float w, float h, color c1, color c2 ) {
-  noFill();
-  for (int i = 0; i <= h; i++) {
-      float inter = map(i, 0, h, 0, 1);
-      color c = lerpColor(c1, c2, inter);
-      stroke(c); 
-      line(0, i, w, i);
-    } 
-}*/
