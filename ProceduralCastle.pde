@@ -8,12 +8,10 @@ int terrainHeight, margin,douveWidth, douveDepth,pointCount;
 
 void setup() {
   size(1300,600);
-
   drawScene();
 }
 
 void mouseClicked(){
-  print("click");
   background(#000000);
   drawScene();
 }
@@ -52,11 +50,11 @@ void drawBuildings(){
   
   int height1 = (int)random(80,120);
   int height2 = height1 + (int)random(20,80);
-  int height3 = height2 + (int)random(20,80);
+  int height3 = height2 + (int)random(50,100);
   int fullWidth = width - 2*(margin+douveWidth);
   int width1 = fullWidth;
-  int width2 = (int)(fullWidth*random(0.4,0.65));
-  int width3 = (int)(fullWidth*1.0/6.0);
+  int width2 = (int)(width1*random(0.4,0.65));
+  int width3 = (int)(width2*random(0.2,0.4));
   
   float halfWidth1 = (width1-width2)*0.5;
   float halfWidth2 = (width2-width3)*0.5;
