@@ -1,7 +1,7 @@
 //Copyright Simon Rodriguez - 2016
-int terrainHeight, margin,douveWidth, douveDepth,pointCount;
+int terrainHeight, margin,douveWidth, douveDepth,pointCount, roomHeight;
 
-
+int roomMargin = 8;
 /*enum TowerType {
   Pointy, Flat, Trapeze, Round;
 }*/
@@ -30,6 +30,7 @@ void randomParameters(int seed){
   println("Douve width: " + douveWidth + ", Douve depth: " + douveDepth);
   pointCount = 3 + (int)random(-1,1);
   println("Point count: " + pointCount);
+  roomHeight = 60;
 }
 
 void draw() {
@@ -58,7 +59,8 @@ void drawBuildings(){
   
   float halfWidth1 = (width1-width2)*0.5;
   float halfWidth2 = (width2-width3)*0.5;
-
+  
+  
   //stroke(#FF0000);
   drawRing(margin+douveWidth,halfWidth1,height1);
   //stroke(#00FF00);
@@ -66,12 +68,45 @@ void drawBuildings(){
   //stroke(#0000FF);
   drawCenter(width3,height3);
   
+  addWell(100);
   
 }
 
-void drawCenter(float widthC, float heightC){
-  rect((width-widthC)*0.5,height-terrainHeight-heightC,widthC,heightC);
- // 
+void drawCenter(float _width, float _height){
+  fill(#FFFFFF);
+  float x = (width-_width)*0.5;
+  rect(x,height-terrainHeight-_height,_width,_height);
+  fill(#000000);
+ float bottom = 0.0;
+  float top = -roomMargin;
+  while(top < _height-roomMargin){
+    
+    bottom = top+roomMargin;
+    top = top+roomMargin+roomHeight;
+    if(min(top,_height-roomMargin)-bottom>0.3*roomHeight){
+      rect(x+roomMargin,height-terrainHeight-min(top,_height-roomMargin),_width-2*roomMargin,min(top,_height-roomMargin)-bottom);
+    }
+  }
+  
+  fill(#FFFFFF);
+  int type = (int)random(1,4);
+  switch(type){
+     case 1://Pointy
+       triangle(x-7,height-terrainHeight-_height,x+0.5*_width,height-terrainHeight-_height-50,x+_width+7,height-terrainHeight-_height);
+     break;
+     case 2://Trapez
+     quad(x-7,height-terrainHeight-_height,x+5,height-terrainHeight-_height-50,x+_width-5,height-terrainHeight-_height-50,x+_width+7,height-terrainHeight-_height);
+     break;
+     case 3: //Crenel
+     rect(x-10,height-terrainHeight-_height-20,_width+20,20);
+     float step = (_width+20)/15.0;
+     for(int i=0;i<15;i+=2){
+       rect(x-10+i*step,height-terrainHeight-_height-20-5,step,5);
+     }
+     break;
+     default://Flat
+     
+  }
 }
 
 void drawRing(float x, float halfWidth, float blockHeight){
@@ -94,6 +129,20 @@ void drawRing(float x, float halfWidth, float blockHeight){
 void drawTower(float x,float _width, float _height, int type){
   fill(#FFFFFF);
   rect(x,height-terrainHeight-_height,_width,_height);
+  
+  fill(#000000);
+  float bottom = 0.0;
+  float top = -roomMargin;
+  while(top < _height-roomMargin){
+    
+    bottom = top+roomMargin;
+    top = top+roomMargin+roomHeight;
+    if(min(top,_height-roomMargin)-bottom>0.4*roomHeight){
+      rect(x+roomMargin,height-terrainHeight-min(top,_height-roomMargin),_width-2*roomMargin,min(top,_height-roomMargin)-bottom);
+    }
+  }
+    
+  fill(#FFFFFF);
   switch(type){
      case 1://Pointy
        triangle(x-7,height-terrainHeight-_height,x+0.5*_width,height-terrainHeight-_height-30,x+_width+7,height-terrainHeight-_height);
@@ -114,6 +163,14 @@ void drawTower(float x,float _width, float _height, int type){
      default://Flat
      
   }
+}
+
+void addWell(int x){
+  fill(#FF0000);
+  int _width = 15;
+  rect(x-_width,height-terrainHeight-_width,2*_width,_width);
+  fill(#00FF00);
+  rect(x-_width,height-terrainHeight,2*_width,terrainHeight);
 }
 
 void drawGround(boolean withBase){
