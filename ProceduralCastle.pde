@@ -2,12 +2,16 @@
 int terrainHeight, margin,douveWidth, douveDepth,pointCount, roomHeight;
 
 int roomMargin = 8;
+int wellWidth = 15;
 /*enum TowerType {
   Pointy, Flat, Trapeze, Round;
 }*/
+PImage well1, well2;
 
 void setup() {
   size(1300,600);
+  well1 = loadImage("pictures/well1.png");
+  well2 = loadImage("pictures/well2.png");
   drawScene();
 }
 
@@ -55,20 +59,21 @@ void drawBuildings(){
   int fullWidth = width - 2*(margin+douveWidth);
   int width1 = fullWidth;
   int width2 = (int)(width1*random(0.4,0.65));
-  int width3 = (int)(width2*random(0.2,0.4));
+  int width3 = (int)(width2*random(0.3,0.45));
   
   float halfWidth1 = (width1-width2)*0.5;
   float halfWidth2 = (width2-width3)*0.5;
   
+  int drawWellInRing = (int)random(0,2);
   
   //stroke(#FF0000);
-  drawRing(margin+douveWidth,halfWidth1,height1);
+  drawRing(margin+douveWidth,halfWidth1,height1,drawWellInRing == 0);
   //stroke(#00FF00);
-  drawRing(margin+douveWidth+halfWidth1,halfWidth2,height2);
+  drawRing(margin+douveWidth+halfWidth1,halfWidth2,height2,drawWellInRing > 0);
   //stroke(#0000FF);
   drawCenter(width3,height3);
   
-  addWell(100);
+  
   
 }
 
@@ -76,7 +81,7 @@ void drawCenter(float _width, float _height){
   fill(#FFFFFF);
   float x = (width-_width)*0.5;
   rect(x,height-terrainHeight-_height,_width,_height);
-  fill(#000000);
+  fill(#555555);
  float bottom = 0.0;
   float top = -roomMargin;
   while(top < _height-roomMargin){
@@ -84,7 +89,7 @@ void drawCenter(float _width, float _height){
     bottom = top+roomMargin;
     top = top+roomMargin+roomHeight;
     if(min(top,_height-roomMargin)-bottom>0.3*roomHeight){
-      rect(x+roomMargin,height-terrainHeight-min(top,_height-roomMargin),_width-2*roomMargin,min(top,_height-roomMargin)-bottom);
+      rect((int)(x+roomMargin),height-terrainHeight-min(top,_height-roomMargin),(int)(_width-2*roomMargin),min(top,_height-roomMargin)-bottom);
     }
   }
   
@@ -109,7 +114,7 @@ void drawCenter(float _width, float _height){
   }
 }
 
-void drawRing(float x, float halfWidth, float blockHeight){
+void drawRing(float x, float halfWidth, float blockHeight, boolean shouldDrawWell){
   int widthTower = (int)random(40,60);
   int heightTower = (int)(blockHeight+random(10,35));
   int type = (int)random(1,5);
@@ -122,7 +127,19 @@ void drawRing(float x, float halfWidth, float blockHeight){
   fill(#AAAAAA);
   rect(width-x-halfWidth,height-terrainHeight-blockHeight,halfWidth,blockHeight);
   
+  
   drawTower(width-x-widthTower,widthTower,heightTower,type);
+  
+  if(shouldDrawWell){
+     int side = (int)random(0,2);
+     if (side==0){
+       int center = (int)random(x+widthTower+wellWidth*1.1,x+halfWidth-wellWidth*1.1);
+       addWell(center);
+     } else {
+       int center = (int)random(width-x-halfWidth+wellWidth*1.1,width-x-widthTower-wellWidth*1.1);
+       addWell(center);
+     }
+  }
 }
 
 
@@ -130,7 +147,7 @@ void drawTower(float x,float _width, float _height, int type){
   fill(#FFFFFF);
   rect(x,height-terrainHeight-_height,_width,_height);
   
-  fill(#000000);
+  fill(#555555);
   float bottom = 0.0;
   float top = -roomMargin;
   while(top < _height-roomMargin){
@@ -138,7 +155,7 @@ void drawTower(float x,float _width, float _height, int type){
     bottom = top+roomMargin;
     top = top+roomMargin+roomHeight;
     if(min(top,_height-roomMargin)-bottom>0.4*roomHeight){
-      rect(x+roomMargin,height-terrainHeight-min(top,_height-roomMargin),_width-2*roomMargin,min(top,_height-roomMargin)-bottom);
+      rect((int)(x+roomMargin),height-terrainHeight-min(top,_height-roomMargin),(int)(_width-2*roomMargin),min(top,_height-roomMargin)-bottom);
     }
   }
     
@@ -166,11 +183,13 @@ void drawTower(float x,float _width, float _height, int type){
 }
 
 void addWell(int x){
-  fill(#FF0000);
-  int _width = 15;
-  rect(x-_width,height-terrainHeight-_width,2*_width,_width);
-  fill(#00FF00);
-  rect(x-_width,height-terrainHeight,2*_width,terrainHeight);
+ 
+  boolean first = random(0,1)>0.5 ;
+  image(first ? well1 : well2, x-wellWidth,height-terrainHeight-wellWidth*3.0);
+  //print(x);
+  //rect(x-wellWidth,height-terrainHeight-wellWidth,2*wellWidth,wellWidth);
+  fill(#666666);
+  rect(x-wellWidth+7,height-terrainHeight,2*wellWidth-14,terrainHeight);
 }
 
 void drawGround(boolean withBase){
