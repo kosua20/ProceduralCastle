@@ -3,15 +3,21 @@ int terrainHeight, margin,douveWidth, douveDepth,pointCount, roomHeight;
 
 int roomMargin = 8;
 int wellWidth = 15;
+float spriteWidth = 76;
 /*enum TowerType {
   Pointy, Flat, Trapeze, Round;
 }*/
-PImage well1, well2;
+PImage well1, well2, house1, house2, house3, roof1, roof2;
 
 void setup() {
   size(1300,600);
   well1 = loadImage("pictures/well1.png");
   well2 = loadImage("pictures/well2.png");
+  house1 = loadImage("pictures/house1.png");
+  house2 = loadImage("pictures/house2.png");
+   house3 = loadImage("pictures/house3.png");
+  roof1 = loadImage("pictures/roof1.png");
+  roof2 = loadImage("pictures/roof2.png");
   drawScene();
 }
 
@@ -93,6 +99,9 @@ void drawCenter(float _width, float _height){
     }
   }
   
+  //Basement
+  float baseWidth = _width*random(0.35,0.7);
+  rect((width-baseWidth)*0.5,height-terrainHeight+roomMargin,baseWidth,roomHeight*0.8);
   fill(#FFFFFF);
   int type = (int)random(1,4);
   switch(type){
@@ -114,35 +123,82 @@ void drawCenter(float _width, float _height){
   }
 }
 
+
+
 void drawRing(float x, float halfWidth, float blockHeight, boolean shouldDrawWell){
   int widthTower = (int)random(40,60);
   int heightTower = (int)(blockHeight+random(10,35));
   int type = (int)random(1,5);
   //Left block
-  fill(#AAAAAA);
+  fill(#DDDDDD);
   rect(x,height-terrainHeight-blockHeight,halfWidth,blockHeight);
+  for(int xi = 0; xi < halfWidth; xi += 20.0){
+    rect(x+xi,height-terrainHeight-blockHeight-6.0,10.0,6);
+  }
+  
+  
+  if (spriteWidth < halfWidth-widthTower && random(0,1) < 0.9){//left building ?
+    float x_building = random(x+widthTower,x+halfWidth-spriteWidth);
+    drawHouse(x_building);
+    if (x_building + 2 * spriteWidth < x +halfWidth){
+      //Enough room for two building
+      if (random(0,1) < 0.9){//second building ?
+        x_building = random(x_building + spriteWidth,x+halfWidth-spriteWidth);
+        drawHouse(x_building);
+      }
+    }
+  }
+  
   drawTower(x,widthTower,heightTower,type);
   
   //Right block
-  fill(#AAAAAA);
+  fill(#DDDDDD);
   rect(width-x-halfWidth,height-terrainHeight-blockHeight,halfWidth,blockHeight);
+  for(int xi = 0; xi < halfWidth-9.0; xi += 20.0){
+    rect(width-x-halfWidth+xi,height-terrainHeight-blockHeight-6.0,10.0,6);
+  }
   
+  if (spriteWidth < halfWidth-widthTower && random(0,1) < 0.9){//right building ?
+    float x_building = random(width-x-halfWidth,width-x-spriteWidth-widthTower);
+    drawHouse(x_building);
+    if (x_building + 2 * spriteWidth < width-x-widthTower){
+      //Enough room for two building
+      if (random(0,1) < 0.9){//second building ?
+        x_building = random(x_building + spriteWidth,width-x-spriteWidth-widthTower);
+        drawHouse(x_building);
+      }
+    }
+  }
   
   drawTower(width-x-widthTower,widthTower,heightTower,type);
   
+  int center = 0;
   if(shouldDrawWell){
      int side = (int)random(0,2);
      if (side==0){
-       int center = (int)random(x+widthTower+wellWidth*1.1,x+halfWidth-wellWidth*1.1);
+       center = (int)random(x+widthTower+wellWidth*1.1,x+halfWidth-wellWidth*1.1);
        addWell(center);
      } else {
-       int center = (int)random(width-x-halfWidth+wellWidth*1.1,width-x-widthTower-wellWidth*1.1);
+       center = (int)random(width-x-halfWidth+wellWidth*1.1,width-x-widthTower-wellWidth*1.1);
        addWell(center);
      }
   }
+  
 }
 
-
+void drawHouse(float x){
+  int count = 1;
+  if(random(0,1) < 0.5){//Add a second floor
+     image(house3, x,height-terrainHeight-2*spriteWidth+25,spriteWidth,spriteWidth);
+     count = 2;
+  }
+  int baseId = (int)random(0,5);
+  image(baseId < 2 ? house1 : (baseId < 3 ? house2 : house3), x,height-terrainHeight-spriteWidth,spriteWidth,spriteWidth);
+  
+  //Place roof
+  int roofId = (int)random(0,2);
+  image(roofId == 0 ? roof1 : roof2, x,height-terrainHeight-count*spriteWidth+(count-1)*25,spriteWidth,spriteWidth);
+}
 void drawTower(float x,float _width, float _height, int type){
   fill(#FFFFFF);
   rect(x,height-terrainHeight-_height,_width,_height);
@@ -188,7 +244,7 @@ void addWell(int x){
   image(first ? well1 : well2, x-wellWidth,height-terrainHeight-wellWidth*3.0);
   //print(x);
   //rect(x-wellWidth,height-terrainHeight-wellWidth,2*wellWidth,wellWidth);
-  fill(#666666);
+  fill(#444444);
   rect(x-wellWidth+7,height-terrainHeight,2*wellWidth-14,terrainHeight);
 }
 
@@ -220,4 +276,20 @@ void drawGround(boolean withBase){
   vertex(width, height - terrainHeight);
   vertex(width, height);
   endShape(CLOSE);
+  fill(#444444);
+  beginShape();
+  vertex(margin, lastHeight+20);
+  vertex(margin, height-douveDepth+2);
+  vertex(margin+douveWidth*0.5, height - douveDepth+10+2);
+  vertex(margin+douveWidth, height - douveDepth+2);
+  vertex(margin+douveWidth, lastHeight+20);
+  endShape(CLOSE);
+  beginShape();
+  vertex(width-(margin+douveWidth), lastHeight+20);
+  vertex(width-(margin+douveWidth), height - douveDepth+2);
+  vertex(width-(margin+douveWidth*0.5), height - douveDepth+10+2);
+  vertex(width-margin, height - douveDepth+2);
+  vertex(width-margin, lastHeight+20);
+  endShape(CLOSE);
+  fill(#FFFFFF);
 }
